@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Makmal Maya Fotosintesis - Biologi Tingkatan 5</title>
+<style>
+:root{--green:#16794b;--dark:#173b2b;--mint:#e9f7ef;--blue:#eaf4ff;--gold:#fff5d9;--ink:#20312a}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7f5;color:var(--ink);line-height:1.45}
+header{background:linear-gradient(120deg,#125b3b,#239765);color:white;padding:26px 18px}
+.wrap{max-width:1100px;margin:auto;padding:0 16px}
+h1{margin:0 0 6px;font-size:clamp(1.5rem,4vw,2.2rem)} header p{margin:0;opacity:.95}
+main{padding:20px 0 40px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{background:white;border-radius:16px;padding:18px;box-shadow:0 4px 18px #173b2b12}
+.panel h2{font-size:1.15rem;margin:0 0 14px;color:var(--dark)}
+.control{margin:17px 0}.control-head{display:flex;justify-content:space-between;gap:10px;font-weight:700}
+input[type=range]{width:100%;accent-color:var(--green);margin:10px 0}
+small,.hint{color:#5c6c63}.value{color:var(--green);font-variant-numeric:tabular-nums}
+.plantbox{min-height:260px;border-radius:14px;background:linear-gradient(#dff3ff,#f5fff7 72%,#d9efcf);position:relative;overflow:hidden;display:flex;align-items:end;justify-content:center;padding-bottom:18px}
+.sun{position:absolute;top:18px;left:22px;width:55px;height:55px;border-radius:50%;background:#ffd45e;box-shadow:0 0 0 12px #ffd45e33,0 0 35px #ffd45e99}
+.plant{position:relative;width:150px;height:190px}
+.stem{position:absolute;bottom:0;left:73px;width:7px;height:160px;background:#348c50;border-radius:8px}
+.leaf{position:absolute;width:72px;height:36px;background:#42a85f;border-radius:100% 0 100% 0}
+.l1{left:10px;top:70px;transform:rotate(12deg)}.l2{right:2px;top:42px;transform:scaleX(-1) rotate(12deg)}
+.l3{left:8px;top:120px;transform:rotate(-10deg) scale(.9)}.l4{right:1px;top:100px;transform:scaleX(-1) rotate(-10deg) scale(.9)}
+.bubble{position:absolute;bottom:48px;width:9px;height:9px;border:2px solid #5bb8df;border-radius:50%;animation:rise 2.8s infinite ease-in}
+@keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(-170px);opacity:0}}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.metric{background:var(--mint);border-radius:12px;padding:12px}.metric strong{display:block;font-size:1.55rem;color:var(--green)}
+.bar{height:13px;background:#e7eee9;border-radius:20px;overflow:hidden;margin-top:8px}.bar>div{height:100%;background:linear-gradient(90deg,#66bd77,#16794b);width:0%;transition:width .25s}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:var(--green);color:white}
+button.secondary{background:#e8f2ec;color:var(--dark)}button:hover{filter:brightness(.96)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{padding:9px 7px;border-bottom:1px solid #e5ece7;text-align:left}th{background:#f0f7f2}
+.question{padding:12px;background:#f7faf8;border-radius:10px;margin:10px 0}
+select{padding:9px;border:1px solid #ccd9d0;border-radius:8px;max-width:100%}
+.feedback{font-weight:700;margin-top:10px;min-height:24px}.notice{background:var(--gold);padding:12px;border-radius:10px;font-size:.92rem}
+canvas{width:100%;height:210px;border:1px solid #e5ece7;border-radius:10px;background:#fff}
+footer{text-align:center;color:#68786e;font-size:.85rem;padding:20px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>🌿 Makmal Maya Fotosintesis</h1>
+<p>Biologi Tingkatan 5 · Fasa Penerokaan · Uji hubungan sebab dan akibat</p>
+</div></header>
+<main class="wrap">
+<div class="grid">
+<section class="panel">
+<h2>1. Kawal pemboleh ubah</h2>
+<p class="hint">Ubah satu faktor pada satu masa. Tetapkan faktor lain untuk melihat kesan yang lebih jelas.</p>
+<div class="control">
+<div class="control-head"><label for="light">Intensiti cahaya</label><span class="value" id="lightVal">50%</span></div>
+<input id="light" type="range" min="0" max="100" value="50">
+<small>0% = tiada cahaya · 100% = cahaya sangat tinggi</small>
+</div>
+<div class="control">
+<div class="control-head"><label for="co2">Kepekatan karbon dioksida (CO₂)</label><span class="value" id="co2Val">400 ppm</span></div>
+<input id="co2" type="range" min="0" max="1000" step="10" value="400">
+<small>Julat simulasi: 0–1000 ppm</small>
+</div>
+<div class="control">
+<div class="control-head"><label for="temp">Suhu</label><span class="value" id="tempVal">25°C</span></div>
+<input id="temp" type="range" min="5" max="50" value="25">
+<small>Model menunjukkan suhu optimum sekitar 30°C.</small>
+</div>
+<div class="actions">
+<button id="record">＋ Rekod bacaan</button>
+<button class="secondary" id="reset">Tetapkan semula</button>
+</div>
+<div class="notice" style="margin-top:14px"><b>Cabaran penyiasatan:</b> Apakah yang berlaku kepada kadar fotosintesis apabila cahaya ditingkatkan tetapi CO₂ dikekalkan rendah?</div>
+</section>
+<section class="panel">
+<h2>2. Pemerhatian simulasi</h2>
+<div class="plantbox" id="plantbox">
+<div class="sun"></div>
+<div class="plant"><div class="stem"></div><div class="leaf l1"></div><div class="leaf l2"></div><div class="leaf l3"></div><div class="leaf l4"></div></div>
+</div>
+<div class="metrics">
+<div class="metric"><span>Kadar relatif fotosintesis</span><strong id="rate">—</strong><small>unit relatif (0–100)</small></div>
+<div class="metric"><span>Faktor paling mengehadkan</span><strong id="limiter" style="font-size:1.1rem">—</strong><small>berdasarkan tetapan semasa</small></div>
+</div>
+<div style="margin-top:14px"><b>Indeks kadar fotosintesis</b><div class="bar"><div id="bar"></div></div></div>
+<p class="hint" id="explain" aria-live="polite">Laraskan pemboleh ubah untuk melihat kesannya.</p>
+</section>
+<section class="panel">
+<h2>3. Graf hubungan pemboleh ubah</h2>
+<p class="hint">Graf menunjukkan bacaan yang telah direkodkan. Cuba ubah satu faktor sahaja bagi setiap siri bacaan.</p>
+<canvas id="chart" width="650" height="250" aria-label="Graf bacaan kadar fotosintesis"></canvas>
+<div class="actions"><button class="secondary" id="clear">Padam rekod graf</button></div>
+</section>
+<section class="panel">
+<h2>4. Jadual data eksperimen</h2>
+<div style="overflow-x:auto">
+<table><thead><tr><th>Bil.</th><th>Cahaya</th><th>CO₂</th><th>Suhu</th><th>Kadar</th></tr></thead><tbody id="rows"><tr><td colspan="5" class="hint">Belum ada bacaan. Klik “Rekod bacaan”.</td></tr></tbody></table>
+</div>
+</section>
+</div>
+<section class="panel" style="margin-top:16px">
+<h2>5. Soalan penerokaan dan KBAT</h2>
+<div class="question"><b>1.</b> Ramalkan apa yang berlaku kepada kadar fotosintesis jika intensiti cahaya meningkat daripada 20% kepada 80%, sementara CO₂ dan suhu dikekalkan.</div>
+<div class="question"><b>2.</b> Mengapakah kadar fotosintesis mungkin tidak meningkat lagi apabila intensiti cahaya terus ditambah?</div>
+<div class="question"><b>3.</b> Pada suhu yang terlalu tinggi, mengapakah kadar fotosintesis boleh menurun?</div>
+<div class="question">
+<b>4. Semak pemahaman:</b> Jika cahaya sangat tinggi tetapi CO₂ sangat rendah, apakah penjelasan yang paling tepat?
+<br><select id="quiz">
+<option value="">Pilih jawapan…</option>
+<option value="a">Cahaya menjadi satu-satunya faktor yang mengawal fotosintesis.</option>
+<option value="b">CO₂ boleh menjadi faktor pengehad walaupun cahaya banyak.</option>
+<option value="c">Kadar fotosintesis sentiasa maksimum apabila cahaya tinggi.</option>
+</select>
+<button id="check" style="margin-left:8px">Semak</button>
+<div class="feedback" id="feedback" aria-live="polite"></div>
+</div>
+<div class="notice"><b>Kesimpulan murid:</b> Lengkapkan ayat ini dalam buku nota: “Apabila __________ meningkat, kadar fotosintesis __________ sehingga __________ menjadi faktor pengehad.”</div>
+</section>
+</main>
+<footer>Nota guru: Model ini bersifat pendidikan dan menggunakan hubungan matematik ringkas, bukan data eksperimen sebenar atau model fisiologi tumbuhan yang lengkap.</footer>
+<script>
+const $=id=>document.getElementById(id);
+const light=$('light'),co2=$('co2'),temp=$('temp');
+let records=[];
+function calc(){
+ const L=+light.value/100, C=+co2.value/1000, T=+temp.value;
+ // Illustrative saturating responses; temperature response peaks near 30 C.
+ const lightFactor=1-Math.exp(-4*L);
+ const co2Factor=C===0?0:(C/(C+0.22));
+ const tempFactor=Math.exp(-Math.pow((T-30)/15,2));
+ const raw=100*lightFactor*co2Factor*tempFactor;
+ const rate=Math.max(0,Math.min(100,raw));
+ const factors=[['Cahaya',lightFactor],['CO₂',co2Factor],['Suhu',tempFactor]].sort((a,b)=>a[1]-b[1]);
+ $('lightVal').textContent=light.value+'%';
+ $('co2Val').textContent=co2.value+' ppm';
+ $('tempVal').textContent=temp.value+'°C';
+ $('rate').textContent=rate.toFixed(1);
+ $('bar').style.width=rate+'%';
+ $('limiter').textContent=factors[0][0];
+ $('explain').textContent=rate<1?'Keadaan semasa hampir tidak menyokong fotosintesis. Semak sama ada cahaya atau CO₂ terlalu rendah.':
+ 'Apabila tetapan berubah, kadar relatif kini '+rate.toFixed(1)+'. Faktor paling rendah dalam model ialah '+factors[0][0]+'. Uji dengan mengubah faktor itu sahaja.';
+ $('plantbox').querySelectorAll('.bubble').forEach(b=>b.remove());
+ const count=Math.round(rate/12);
+ for(let i=0;i<count;i++){let b=document.createElement('span');b.className='bubble';b.style.left=(48+Math.random()*14)+'%';b.style.animationDelay=(Math.random()*2)+'s';$('plantbox').appendChild(b)}
+ return rate;
+}
+[light,co2,temp].forEach(el=>el.addEventListener('input',calc));
+function draw(){
+ const c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;
+ ctx.clearRect(0,0,w,h);ctx.strokeStyle='#dce7df';ctx.lineWidth=1;
+ for(let i=0;i<=5;i++){let y=20+i*(h-55)/5;ctx.beginPath();ctx.moveTo(48,y);ctx.lineTo(w-15,y);ctx.stroke();ctx.fillStyle='#52665a';ctx.font='12px Arial';ctx.fillText(String(100-i*20),12,y+4)}
+ ctx.fillStyle='#52665a';ctx.fillText('Kadar relatif',8,13);ctx.fillText('Bacaan direkodkan →',w-165,h-8);
+ if(records.length){ctx.strokeStyle='#16804e';ctx.lineWidth=2.5;ctx.beginPath();records.forEach((r,i)=>{let x=48+(records.length===1?0:i*(w-75)/Math.max(1,records.length-1));let y=20+(100-r.rate)*(h-55)/100;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+ records.forEach((r,i)=>{let x=48+(records.length===1?0:i*(w-75)/Math.max(1,records.length-1));let y=20+(100-r.rate)*(h-55)/100;ctx.fillStyle='#16804e';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill()})}
+}
+function renderRows(){
+ $('rows').innerHTML=records.length?records.map((r,i)=>`<tr><td>${i+1}</td><td>${r.light}%</td><td>${r.co2} ppm</td><td>${r.temp}°C</td><td><b>${r.rate.toFixed(1)}</b></td></tr>`).join(''):'<tr><td colspan="5" class="hint">Belum ada bacaan. Klik “Rekod bacaan”.</td></tr>';
+ draw();
+}
+$('record').addEventListener('click',()=>{records.push({light:+light.value,co2:+co2.value,temp:+temp.value,rate:calc()});renderRows()});
+$('reset').addEventListener('click',()=>{light.value=50;co2.value=400;temp.value=25;calc()});
+$('clear').addEventListener('click',()=>{records=[];renderRows()});
+$('check').addEventListener('click',()=>{$('feedback').textContent=$('quiz').value==='b'?'Betul! CO₂ yang rendah boleh mengehadkan kadar fotosintesis walaupun cahaya banyak.':$('quiz').value?'Cuba lagi. Fikirkan peranan CO₂ sebagai bahan mentah fotosintesis.':'Sila pilih satu jawapan.';$('feedback').style.color=$('quiz').value==='b'?'#16794b':'#9a5a00'});
+calc();draw();
+</script>
+</body>
+</html>
